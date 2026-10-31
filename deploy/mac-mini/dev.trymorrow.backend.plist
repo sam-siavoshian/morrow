@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The Morrow backend as a system LaunchDaemon that runs as the deploy user. deploy.sh fills in __USER__,
+     __HOME__ and __BUN__ and installs it root-owned in /Library/LaunchDaemons. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>dev.trymorrow.backend</string>
+  <key>UserName</key>
+  <string>__USER__</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__BUN__</string>
+    <string>src/index.ts</string>
+  </array>
+  <!-- Bun loads .env from here. -->
+  <key>WorkingDirectory</key>
+  <string>__HOME__/morrow/backend</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>NODE_ENV</key>
+    <string>production</string>
+    <key>HOME</key>
+    <string>__HOME__</string>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <!-- Restart after a crash or a clean exit alike (deploy.sh restarts it with SIGTERM); the backend resumes
+       from Terse on boot. -->
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+  <!-- The backend drains on SIGTERM; give it time before SIGKILL. -->
+  <key>ExitTimeOut</key>
+  <integer>30</integer>
+  <key>ProcessType</key>
+  <string>Interactive</string>
+  <key>StandardOutPath</key>
+  <string>__HOME__/morrow/logs/backend.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/morrow/logs/backend.log</string>
+</dict>
+</plist>

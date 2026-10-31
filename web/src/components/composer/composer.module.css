@@ -1,0 +1,150 @@
+/* The composer card (t3code ComposerSurface): card colour at the glass opacity, blurred, with a
+   1px outline drawn over the content so nothing inside can cover it. */
+.card {
+  --composer-outline: light-dark(rgb(0 0 0 / 8%), rgb(255 255 255 / 6%));
+  --composer-glass: var(--color-surface);
+  position: relative;
+  isolation: isolate;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--composer-glass) var(--glass-opacity), transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  box-shadow: var(--shadow-composer);
+  transition: box-shadow var(--motion-base) var(--ease-out);
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  border: 1px solid var(--composer-outline);
+  box-shadow: inset 0 1px 0 light-dark(transparent, rgb(255 255 255 / 3%));
+  pointer-events: none;
+  transition: border-color var(--motion-base) var(--ease-out);
+}
+
+.card:focus-within::after {
+  border-color: light-dark(rgb(0 0 0 / 14%), rgb(255 255 255 / 12%));
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card {
+    background: var(--composer-glass);
+  }
+}
+
+/* Banners attached above the card: narrower by the drawer inset, tucked 1rem under its top edge. */
+.attached {
+  --composer-outline: light-dark(rgb(0 0 0 / 8%), rgb(255 255 255 / 6%));
+  position: relative;
+  margin-inline: 1.375rem;
+  margin-bottom: calc(-1rem - 1px);
+  padding-bottom: calc(1rem + 1px);
+  border: 1px solid var(--composer-outline);
+  border-bottom: 0;
+  border-radius: 1rem 1rem 0 0;
+  background: color-mix(in srgb, var(--color-surface) var(--glass-opacity), transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+}
+
+.attached + .attached {
+  border-radius: 0;
+  border-top: 0;
+}
+
+.attached[data-variant="error"] {
+  --composer-outline: color-mix(in srgb, var(--color-danger) 32%, transparent);
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--color-danger) 8%, transparent),
+    color-mix(in srgb, var(--color-danger) 8%, transparent)
+  );
+}
+
+.attached[data-variant="warning"] {
+  --composer-outline: color-mix(in srgb, var(--color-warning) 28%, transparent);
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--color-warning) 8%, transparent),
+    color-mix(in srgb, var(--color-warning) 8%, transparent)
+  );
+}
+
+/* The send button changes shape (arrow, Start split, Refine): each new face settles in. */
+.morph {
+  animation: morph 220ms var(--ease-emphasized) both;
+}
+
+@keyframes morph {
+  from {
+    opacity: 0;
+    scale: 0.92;
+    filter: blur(2px);
+  }
+}
+
+:root[data-motion="reduce"] .morph {
+  animation: none;
+}
+
+/* The hero's sky: the landing page's picture with its halftone dissolve, sharp. The band ends at the
+   composer's bottom edge (the hero's top padding, plus the hero and the composer), and its last
+   stretch melts into the ground, so the strip under the composer always sits on plain ground. */
+.skyBand {
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(max(3.5rem, min(16vh, 9rem)) + 15.5rem);
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
+  mask-image: linear-gradient(to bottom, #000 70%, transparent);
+}
+
+/* The repo name in the hero: light drifting through it, the scene's own light (sun, dawn, moon).
+   The fill is the gradient, so the parent's text-shadow would show through the letters; a
+   drop-shadow lifts it off the sky instead. */
+.repo {
+  /* Day: sunlight. A blue would sink into the sky behind it. */
+  --repo-a: #ffd27a;
+  --repo-c: #ffb08a;
+  /* Two lights with a white glint between them that sweeps across as the gradient drifts. */
+  background: linear-gradient(100deg, var(--repo-a) 0%, var(--repo-c) 42%, #fff 50%, var(--repo-c) 58%, var(--repo-a) 100%) 0 0 / 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 1px 10px var(--sky-shadow));
+  animation: repo-light 7s ease-in-out infinite alternate;
+  /* A long name with no hyphen has no place to wrap: the centered heading would grow past the column on both
+     sides and lose its first letters off the left edge. `anywhere` lets it break mid-name, only when it must. */
+  overflow-wrap: anywhere;
+}
+
+[data-theme="dawn"] .repo {
+  --repo-a: #ffb48f;
+  --repo-c: #c9a8ff;
+}
+
+[data-theme="night"] .repo {
+  --repo-a: #7fc4ff;
+  --repo-c: #b69cff;
+}
+
+:root[data-motion="reduce"] .repo {
+  animation: none;
+}
+
+@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+  .repo {
+    color: var(--repo-c);
+  }
+}
+
+@keyframes repo-light {
+  to {
+    background-position: 100% 0;
+  }
+}

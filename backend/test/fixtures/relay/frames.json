@@ -1,0 +1,13 @@
+{
+  "_note": "Raw observer frames as captured from relaycast-engine 11.1.0 + broker 14.0.0 (ids shortened where irrelevant).",
+  "agentActive": {"type":"agent.status.active","agent":{"name":"w-t1-be-e445"},"agent_name":"w-t1-be-e445","status":"active","subject_agent_id":"241476988424810496","timestamp":"2020-01-02T03:04:05.467Z","seq":34},
+  "agentOfflineNoTopLevelName": {"type":"agent.status.offline","created_at":"2020-01-02T03:04:06.215Z","agent":{"id":"241476988424810496","name":"w-t1-be-e445"},"status":"offline","seq":37},
+  "agentExited": {"type":"agent.exited","agent_id":"241476988424810496","agent_name":"w-t1-be-e445","node_id":"node_e833454b68f2036e8ae52e7d3f24d818","invocation_id":"inv_idem_37721b982d8a35309d0f277300e4f3a6917bf1b05baea48b43bb412064954085","reason":"missing_from_inventory","created_at":"2020-01-02T03:04:06.222Z","seq":38},
+  "nodeOffline": {"type":"node.status.offline","node_id":"node_5fd05d8391c2ebdcf528fa2a9de1ebe8","node_name":"n-alice","reason":"disconnected","created_at":"2020-01-02T03:04:07.518Z","seq":35},
+  "nodeOnlineNoName": {"type":"node.status.online","node_id":"node_5fd05d8391c2ebdcf528fa2a9de1ebe8","node_name":null,"created_at":"2020-01-02T03:04:08.000Z","seq":36},
+  "messageCreated": {"id":"9c8eb478-24cc-5339-aa47-19d9e08f6845","type":"message.created","created_at":"2020-01-02T03:04:05.000Z","channel_id":"241476504460849152","channel":"proj-abc","message":{"id":"241476504506986496","agent_id":"241476504490209280","agent_name":"h-saam","text":"hello <b>x</b>","attachments":[],"injection_mode":"wait","metadata":{}},"seq":6},
+  "threadReply": {"id":"d3975862-d6c9-51d4-b0e1-ea56f900abc8","type":"thread.reply","created_at":"2020-01-02T03:04:05.000Z","channel_id":"241476504460849152","channel":"proj-abc","parent_id":"241476504506986496","message":{"id":"241476504544735232","agent_id":"241476430880174080","agent_name":"dispatcher","agent_address":"dispatcher@direct","text":"reply1"},"seq":7},
+  "dmReceived": {"id":"f4c310a0-1f92-5754-b2c0-416b5b4d229a","type":"dm.received","created_at":"2020-01-02T03:04:05.000Z","conversation_id":"dm_24dc9fe38780c3ef062d6e64","message":{"id":"241476504569901056","agent_id":"241476504490209280","agent_name":"h-saam","agent_address":"h-saam@direct","text":"dm text @dispatcher","injection_mode":"wait"},"seq":8},
+  "actionCompleted": {"type":"action.completed","invocation_id":"inv_idem_x","action_name":"spawn","status":"completed","output":{"name":"w-t1-be-e445","ready":true,"spawned":true},"seq":40},
+  "memberJoined": {"type":"member.joined","created_at":"2020-01-02T03:04:05.084Z","channel_id":"241476504460849152","channel":"proj-abc","agent_id":"241476430880174080","agent_name":"dispatcher","seq":3}
+}

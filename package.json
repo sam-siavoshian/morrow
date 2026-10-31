@@ -1,0 +1,18 @@
+{
+  "name": "morrow",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "backend",
+    "web"
+  ],
+  "scripts": {
+    "dev:web": "bun run --cwd web dev",
+    "dev:backend": "bun run --cwd backend dev",
+    "dev:actors": "bun run --cwd actors dev",
+    "dev:stack": "bun scripts/dev-stack.ts",
+    "typecheck": "bun run --cwd packages/contracts typecheck && bun run --cwd actors check && bun run --cwd backend typecheck && bun run --cwd web typecheck",
+    "test": "bun run --cwd actors test && bun run --cwd backend test && cd web && bun test"
+  }
+}

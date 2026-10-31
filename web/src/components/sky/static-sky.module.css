@@ -1,0 +1,46 @@
+/* Placement from Zephium's new-tab mockup (website/components/scene/new-tab.module.css):
+   the picture is wide enough that its horizon, 38.83% of its width down,
+   lands on --horizon and the top never shows the page. */
+.baked {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+  background: var(--color-ground);
+  pointer-events: none;
+}
+
+.baked::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(var(--horizon, 60) * 1cqh - max(100cqw, calc(var(--horizon, 60) / 0.3883 * 1cqh)) * 0.3883);
+  width: max(100cqw, calc(var(--horizon, 60) / 0.3883 * 1cqh));
+  aspect-ratio: 2200 / 1238;
+  translate: -50% 0;
+  background: var(--sky-baked) 50% 50% / 100% 100% no-repeat;
+}
+
+@media (max-width: 899px) {
+  .baked::before {
+    background-image: var(--sky-baked-narrow);
+  }
+}
+
+.baked[data-arrive]::before {
+  animation: fade 1.2s var(--ease-out) backwards;
+}
+
+.frost {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-canvas) var(--sky-frost) 50% 50% / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

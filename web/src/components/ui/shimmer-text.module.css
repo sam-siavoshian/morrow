@@ -1,0 +1,71 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Adapted from zephium-browser/website components/island/shimmer.module.css.
+ * Changes: rest and lit colours follow the surrounding text colour.
+ */
+
+.shimmer {
+  position: relative;
+  display: inline-block;
+  max-inline-size: 100%;
+  overflow: hidden;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
+.words {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.running .words {
+  color: var(--shimmer-rest, color-mix(in srgb, currentColor 62%, transparent));
+}
+
+.band {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 40%;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 45%, black 55%, transparent);
+  animation: band 2.4s linear infinite;
+}
+
+.lit {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: block;
+  inline-size: 250%;
+  overflow: hidden;
+  color: var(--shimmer-lit, currentColor);
+  text-overflow: ellipsis;
+  animation: lit 2.4s linear infinite;
+}
+
+/* Reduced motion: see [data-shimmer] in globals.css (CSS modules here go
+   through Tailwind's parser, which does not know :global). */
+
+@keyframes band {
+  0% {
+    transform: translateX(-100%);
+  }
+  72%,
+  100% {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes lit {
+  0% {
+    transform: translateX(40%);
+  }
+  72%,
+  100% {
+    transform: translateX(-100%);
+  }
+}

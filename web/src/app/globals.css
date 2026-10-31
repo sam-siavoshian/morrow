@@ -1,0 +1,908 @@
+@import "tailwindcss" source("../");
+
+/*
+ * Morrow design tokens.
+ *
+ * Colour values come from Zephium (product tokens, sky glass, website
+ * palette), geometry from t3code where Zephium has none, micro details from
+ * opencode. See docs/research/*.md and web/THIRD_PARTY_NOTICES.md.
+ *
+ * Scenes: `data-theme="day" | "dawn" | "night"` on <html> (set before paint by
+ * ThemeScript) or on any subtree. Day and night differ only through
+ * `light-dark()` + `color-scheme`, so a themed subtree resolves every token
+ * against its own scheme. Dawn is a light scene with a lavender paper.
+ */
+
+@custom-variant dark (&:where([data-theme="night"], [data-theme="night"] *));
+@custom-variant light (&:where([data-theme="day"], [data-theme="day"] *, [data-theme="dawn"], [data-theme="dawn"] *));
+@custom-variant motion-safe (&:where(:root:not([data-motion="reduce"]) *));
+@custom-variant motion-reduce (&:where(:root[data-motion="reduce"] *));
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable Text", "Segoe UI",
+    system-ui, sans-serif;
+
+  /* Zephium display scale */
+  --text-display: clamp(2.5rem, 1.1rem + 3.6vw, 4.5rem);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.045em;
+  --text-headline: clamp(2rem, 1.2rem + 2.6vw, 3.5rem);
+  --text-headline--line-height: 1.04;
+  --text-headline--letter-spacing: -0.035em;
+  --text-lede: clamp(1.0625rem, 0.95rem + 0.35vw, 1.25rem);
+  --text-lede--line-height: 1.5;
+  --text-lede--letter-spacing: -0.011em;
+
+  /* t3code dense sizes below text-xs */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: calc(1 / 0.6875);
+  --text-3xs: 0.625rem;
+  --text-3xs--line-height: calc(0.875 / 0.625);
+  --text-4xs: 0.5rem;
+  --text-4xs--line-height: 1;
+
+  /* Zephium product radii */
+  --radius-swatch: 3px;
+  --radius-inset: 8px;
+  --radius-control-compact: 10px;
+  --radius-row: 12px;
+  --radius-control: 14px;
+  --radius-card: 18px;
+  --radius-control-large: 18px;
+  --radius-panel: 22px;
+  --radius-sheet: 28px;
+  --radius-capsule: 999px;
+
+  /* Zephium motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-press: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: linear(0, 0.0232, 0.0821, 0.1636, 0.2572, 0.3552, 0.452, 0.5438, 0.628, 0.7032, 0.7689, 0.825, 0.8719, 0.9103, 0.9412, 0.9653, 0.9838, 0.9974, 1.007, 1.0135, 1.0174, 1.0194, 1.0199, 1.0194, 1.0182, 1.0166, 1.0147, 1.0128, 1.0109, 1.009, 1.0074, 1.0059, 1.0046, 1.0035, 1.0025, 1.0018, 1.0012, 1.0007, 1.0003, 1);
+  --ease-snap: linear(0, 0.1776, 0.3343, 0.4698, 0.5848, 0.6808, 0.7597, 0.8234, 0.8742, 0.9138, 0.9443, 0.9672, 0.9839, 0.9959, 1.004, 1.0092, 1.0123, 1.0137, 1.0141, 1.0136, 1.0127, 1.0115, 1.0101, 1.0088, 1.0075, 1.0062, 1.0051, 1.0041, 1.0033, 1.0026, 1.002, 1.0015, 1);
+
+  /* t3code stepped loops: the compositor paints a handful of frames per cycle */
+  --animate-skeleton: skeleton 2.4s infinite;
+  --animate-status-pulse: status-pulse 2s infinite;
+  --animate-status-ping: status-ping 2s infinite;
+  --animate-live: live-pulse 1.4s ease-in-out infinite;
+  --animate-caret: caret-blink 1s steps(1) infinite;
+}
+
+/* Theme-varying tokens are declared below on `:root, [data-theme]`; the
+   utilities read them in place so a themed subtree gets its own values. */
+@theme inline reference {
+  --color-ground: var(--color-ground);
+  --color-canvas: var(--color-canvas);
+  --color-page: var(--color-page);
+  --color-chrome: var(--color-chrome);
+  --color-surface: var(--color-surface);
+  --color-raised: var(--color-raised);
+  --color-float: var(--color-float);
+  --color-popover: var(--color-popover);
+  --color-menu: var(--color-menu);
+  --color-menu-separator: var(--color-menu-separator);
+  --color-fill: var(--color-fill);
+  --color-fill-hover: var(--color-fill-hover);
+  --color-fill-active: var(--color-fill-active);
+  --color-fill-pressed: var(--color-fill-pressed);
+  --color-fill-strong: var(--color-fill-strong);
+  --color-card: var(--color-card);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-row-hover: var(--color-row-hover);
+  --color-row-active: var(--color-row-active);
+  --color-row-pressed: var(--color-row-pressed);
+  --color-text: var(--color-text);
+  --color-label-secondary: var(--color-label-secondary);
+  --color-muted: var(--color-muted);
+  --color-faint: var(--color-faint);
+  --color-control: var(--color-control);
+  --color-control-hover: var(--color-control-hover);
+  --color-control-pressed: var(--color-control-pressed);
+  --color-field: var(--color-field);
+  --color-field-hover: var(--color-field-hover);
+  --color-field-ring: var(--color-field-ring);
+  --color-lit: var(--color-lit);
+  --color-lit-hover: var(--color-lit-hover);
+  --color-on-lit: var(--color-on-lit);
+  --color-lit-soft: var(--color-lit-soft);
+  --color-ring: var(--color-ring);
+  --color-danger: var(--color-danger);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-info: var(--color-info);
+  --color-sheen: var(--color-sheen);
+  --color-soft-sky: var(--color-soft-sky);
+  --color-soft-mint: var(--color-soft-mint);
+  --color-soft-lemon: var(--color-soft-lemon);
+  --color-soft-peach: var(--color-soft-peach);
+  --color-soft-rose: var(--color-soft-rose);
+  --color-soft-lilac: var(--color-soft-lilac);
+  --color-soft-sky-wash: var(--color-soft-sky-wash);
+  --color-soft-sky-edge: var(--color-soft-sky-edge);
+  --color-soft-sky-ink: var(--color-soft-sky-ink);
+  --color-soft-mint-wash: var(--color-soft-mint-wash);
+  --color-soft-mint-edge: var(--color-soft-mint-edge);
+  --color-soft-mint-ink: var(--color-soft-mint-ink);
+  --color-soft-lemon-wash: var(--color-soft-lemon-wash);
+  --color-soft-lemon-edge: var(--color-soft-lemon-edge);
+  --color-soft-lemon-ink: var(--color-soft-lemon-ink);
+  --color-soft-peach-wash: var(--color-soft-peach-wash);
+  --color-soft-peach-edge: var(--color-soft-peach-edge);
+  --color-soft-peach-ink: var(--color-soft-peach-ink);
+  --color-soft-rose-wash: var(--color-soft-rose-wash);
+  --color-soft-rose-edge: var(--color-soft-rose-edge);
+  --color-soft-rose-ink: var(--color-soft-rose-ink);
+  --color-soft-lilac-wash: var(--color-soft-lilac-wash);
+  --color-soft-lilac-edge: var(--color-soft-lilac-edge);
+  --color-soft-lilac-ink: var(--color-soft-lilac-ink);
+  --color-sky-ink: var(--sky-ink);
+  --color-sky-ink-hover: var(--sky-ink-hover);
+  --color-sky-on-ink: var(--sky-on-ink);
+  --color-sky-veil: var(--sky-veil);
+  --color-sky-veil-hover: var(--sky-veil-hover);
+  --color-thumb: var(--color-thumb);
+  --color-terminal: var(--terminal-background);
+  --color-terminal-ink: var(--terminal-foreground);
+  --color-terminal-cursor: var(--terminal-cursor);
+
+  --shadow-raised: var(--shadow-raised);
+  --shadow-float: var(--shadow-float);
+  --shadow-overlay: var(--shadow-overlay);
+  --shadow-menu: var(--shadow-menu);
+  --shadow-sheet: var(--shadow-sheet);
+  --shadow-badge: var(--shadow-badge);
+  --shadow-field-focus: var(--shadow-field-focus);
+  --shadow-shine: var(--shadow-shine);
+  --shadow-shine-top: var(--shadow-shine-top);
+  --shadow-row-rim: var(--shadow-row-rim);
+  --shadow-hairline: var(--shadow-hairline);
+  --shadow-composer: var(--shadow-composer);
+  --shadow-sky: var(--sky-float-shadow);
+  --shadow-sky-veil: var(--sky-veil-rim);
+  --shadow-lit: var(--shadow-lit);
+  --shadow-thumb: var(--shadow-thumb);
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+
+    /* t3code geometry */
+    --control-radius: 0.5rem;
+    --sidebar-width: 16rem;
+    --sidebar-min-width: 13rem;
+    --sidebar-content-inset: 0.5rem;
+    --sidebar-control-gap: 0.5rem;
+    --sidebar-row-content-inset: 0.625rem;
+    --command-shell-inset: 0.5rem;
+    --command-content-inset: 1rem;
+    --floating-content-inset: 0.75rem;
+    --workspace-topbar-height: 52px;
+    --workspace-titlebar-control-size: 1.75rem;
+    --workspace-titlebar-control-gap: 0.75rem;
+    --chat-content-max-width: 46rem;
+    --thread-details-panel-width: 17.5rem;
+    --workspace-gutter: 0.75rem;
+    --font-size-prompt: 15px;
+    --font-size-code: 13px;
+    --font-size-prompt-touch: max(var(--font-size-prompt), 16px);
+
+    /* Zephium website layout */
+    --gutter: clamp(20px, 4vw, 40px);
+    --content: 1200px;
+    --nav-height: 64px;
+
+    /* Zephium motion durations */
+    --motion-instant: 70ms;
+    --motion-fast: 120ms;
+    --motion-base: 200ms;
+    --motion-slow: 300ms;
+    --motion-page: 400ms;
+
+    /* t3code body grain */
+    --surface-grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    --surface-grain-size: 256px 256px;
+
+    /* The private terminal reads dark in every scene. */
+    --terminal-background: #14161b;
+    --terminal-foreground: #e6e8ee;
+    --terminal-cursor: #9cc8ff;
+    --terminal-selection: #3a4a66;
+    --terminal-black: #1c1f26;
+    --terminal-red: #ff7b7b;
+    --terminal-green: #7ee2a8;
+    --terminal-yellow: #f5d77a;
+    --terminal-blue: #8ab8ff;
+    --terminal-magenta: #d6a6ff;
+    --terminal-cyan: #7fd8e8;
+    --terminal-white: #d8dce4;
+    --terminal-bright-black: #5c6370;
+    --terminal-bright-red: #ff9b9b;
+    --terminal-bright-green: #a2f0c2;
+    --terminal-bright-yellow: #ffe6a0;
+    --terminal-bright-blue: #aacbff;
+    --terminal-bright-magenta: #e4c1ff;
+    --terminal-bright-cyan: #a6e9f3;
+    --terminal-bright-white: #ffffff;
+
+    /* Zephium masks */
+    --mask-fade-end: linear-gradient(to right, #000 calc(100% - 26px), transparent);
+    --mask-fade-bottom: linear-gradient(to bottom, #000 78%, transparent);
+  }
+
+  @media (min-width: 40rem) {
+    :root {
+      --workspace-gutter: 1.25rem;
+    }
+  }
+
+  :root,
+  [data-theme] {
+    /* Non-colour values that differ by scheme: light first, night below. */
+    --soft-wash: 13%;
+    --soft-edge: 30%;
+    --soft-ink: 78%;
+    --wash-raised: 62%;
+    --glass-blur: 12px;
+    --glass-opacity: 80%;
+    --glass-saturation: 1.14;
+
+    /* Paper: the colour each baked sky dissolves into (scripts/bake-sky.ts) */
+    --color-ground: light-dark(#f7f7f8, #1a1d25);
+
+    /* Zephium product surfaces */
+    --color-canvas: light-dark(#f1f1f3, #1a1a1d);
+    --color-page: var(--color-canvas);
+    --color-chrome: light-dark(#e6e6e9, #1f1f22);
+    --color-surface: light-dark(#ffffff, #26262a);
+    --color-raised: light-dark(#ffffff, #2c2c30);
+    --color-float: light-dark(#ffffff, #3d3d44);
+    --color-popover: var(--color-raised);
+    --color-menu: color-mix(in srgb, var(--color-float) var(--wash-raised), transparent);
+    --color-menu-separator: light-dark(rgb(24 24 27 / 0.09), rgb(255 255 255 / 0.1));
+
+    --color-fill: light-dark(rgb(24 24 27 / 0.05), rgb(255 255 255 / 0.05));
+    --color-fill-hover: light-dark(rgb(24 24 27 / 0.08), rgb(255 255 255 / 0.08));
+    --color-fill-active: light-dark(rgb(24 24 27 / 0.075), rgb(255 255 255 / 0.12));
+    --color-fill-pressed: light-dark(rgb(24 24 27 / 0.11), rgb(255 255 255 / 0.16));
+    --color-fill-strong: light-dark(rgb(24 24 27 / 0.16), rgb(255 255 255 / 0.22));
+    --color-card: light-dark(rgb(255 255 255 / 0.92), rgb(255 255 255 / 0.05));
+    --color-border: light-dark(rgb(24 24 27 / 0.07), rgb(255 255 255 / 0.07));
+    --color-border-strong: light-dark(rgb(24 24 27 / 0.13), rgb(255 255 255 / 0.13));
+
+    --color-row-hover: light-dark(rgb(24 24 27 / 0.04), rgb(255 255 255 / 0.04));
+    --color-row-active: light-dark(rgb(24 24 27 / 0.075), rgb(255 255 255 / 0.075));
+    --color-row-pressed: light-dark(rgb(24 24 27 / 0.1), rgb(255 255 255 / 0.1));
+    --scroll-thumb: light-dark(rgb(24 24 27 / 0.2), rgb(255 255 255 / 0.16));
+    --scroll-thumb-hover: light-dark(rgb(24 24 27 / 0.34), rgb(255 255 255 / 0.28));
+
+    --color-text: light-dark(#1c1c1f, #f4f4f6);
+    --color-label-secondary: light-dark(#55555c, #d8d8db);
+    --color-muted: light-dark(rgb(28 28 31 / 0.62), rgb(244 244 246 / 0.68));
+    --color-faint: light-dark(rgb(28 28 31 / 0.42), rgb(244 244 246 / 0.44));
+
+    --color-control: light-dark(#ffffff, rgb(255 255 255 / 0.09));
+    --color-control-hover: light-dark(#f9f9f9, rgb(255 255 255 / 0.13));
+    --color-control-pressed: light-dark(#f0f0f0, rgb(255 255 255 / 0.17));
+    --color-field: light-dark(rgb(228 228 230 / 0.7), rgb(255 255 255 / 0.09));
+    --color-field-hover: light-dark(rgb(170 170 170 / 0.2), rgb(255 255 255 / 0.12));
+    --color-field-ring: light-dark(rgb(0 0 0 / 0.14), rgb(255 255 255 / 0.16));
+
+    /* No accent hue: the thing that is on is the brightest thing in the frame. */
+    --color-lit: light-dark(#222226, #ededf0);
+    --color-lit-hover: light-dark(#2e2e35, #f7f7fa);
+    --color-on-lit: light-dark(#ffffff, #161619);
+    --color-lit-soft: light-dark(rgb(34 34 38 / 0.12), rgb(237 237 240 / 0.16));
+    --color-ring: light-dark(rgb(24 24 27 / 0.4), rgb(255 255 255 / 0.5));
+
+    --color-danger: light-dark(#c0474f, #ef8a8e);
+    --color-success: light-dark(#2f7f5a, #7fcaa1);
+    --color-warning: light-dark(#8c6a2a, #dcb977);
+    --color-info: light-dark(#2f6fd6, #8fbcf7);
+    --color-sheen: light-dark(#4f8fe0, #c9d6ff);
+
+    /* Six soft hues for agents and user-marked things */
+    --color-soft-sky: light-dark(#4f8fe0, #8db9f2);
+    --color-soft-mint: light-dark(#2f9c77, #88d0b3);
+    --color-soft-lemon: light-dark(#b88c14, #e6cb80);
+    --color-soft-peach: light-dark(#d2703f, #efaa89);
+    --color-soft-rose: light-dark(#d35d7a, #ee9aae);
+    --color-soft-lilac: light-dark(#7e67d6, #b7a6f0);
+
+    --color-soft-sky-wash: color-mix(in oklab, var(--color-soft-sky) var(--soft-wash), var(--color-surface));
+    --color-soft-sky-edge: color-mix(in oklab, var(--color-soft-sky) var(--soft-edge), transparent);
+    --color-soft-sky-ink: color-mix(in oklab, var(--color-soft-sky) var(--soft-ink), var(--color-text));
+    --color-soft-mint-wash: color-mix(in oklab, var(--color-soft-mint) var(--soft-wash), var(--color-surface));
+    --color-soft-mint-edge: color-mix(in oklab, var(--color-soft-mint) var(--soft-edge), transparent);
+    --color-soft-mint-ink: color-mix(in oklab, var(--color-soft-mint) var(--soft-ink), var(--color-text));
+    --color-soft-lemon-wash: color-mix(in oklab, var(--color-soft-lemon) var(--soft-wash), var(--color-surface));
+    --color-soft-lemon-edge: color-mix(in oklab, var(--color-soft-lemon) var(--soft-edge), transparent);
+    --color-soft-lemon-ink: color-mix(in oklab, var(--color-soft-lemon) var(--soft-ink), var(--color-text));
+    --color-soft-peach-wash: color-mix(in oklab, var(--color-soft-peach) var(--soft-wash), var(--color-surface));
+    --color-soft-peach-edge: color-mix(in oklab, var(--color-soft-peach) var(--soft-edge), transparent);
+    --color-soft-peach-ink: color-mix(in oklab, var(--color-soft-peach) var(--soft-ink), var(--color-text));
+    --color-soft-rose-wash: color-mix(in oklab, var(--color-soft-rose) var(--soft-wash), var(--color-surface));
+    --color-soft-rose-edge: color-mix(in oklab, var(--color-soft-rose) var(--soft-edge), transparent);
+    --color-soft-rose-ink: color-mix(in oklab, var(--color-soft-rose) var(--soft-ink), var(--color-text));
+    --color-soft-lilac-wash: color-mix(in oklab, var(--color-soft-lilac) var(--soft-wash), var(--color-surface));
+    --color-soft-lilac-edge: color-mix(in oklab, var(--color-soft-lilac) var(--soft-edge), transparent);
+    --color-soft-lilac-ink: color-mix(in oklab, var(--color-soft-lilac) var(--soft-ink), var(--color-text));
+
+    /* Agent characters */
+    --color-agent-lead: #ecebf4;
+    --color-agent-lead-sheen: #c9d6ff;
+    --color-agent-browser: var(--color-soft-sky);
+    --color-agent-research: var(--color-soft-lemon);
+    --color-agent-computer: var(--color-soft-mint);
+    --color-agent-connection: var(--color-soft-lilac);
+
+    /* Shadows: one soft drop + a hairline rim, never stacked */
+    --shadow-raised: 0 1px 2px light-dark(rgb(24 24 27 / 0.08), rgb(0 0 0 / 0.16)),
+      0 0 0 0.5px light-dark(rgb(24 24 27 / 0.06), rgb(255 255 255 / 0.06));
+    --shadow-float: 0 6px 22px light-dark(rgb(24 24 27 / 0.16), rgb(0 0 0 / 0.34)),
+      0 0 0 0.5px light-dark(rgb(24 24 27 / 0.1), rgb(255 255 255 / 0.08));
+    --shadow-overlay: 0 12px 36px light-dark(rgb(24 24 27 / 0.14), rgb(0 0 0 / 0.3)),
+      0 0 0 0.5px light-dark(rgb(24 24 27 / 0.1), rgb(255 255 255 / 0.08));
+    --shadow-menu: 0 0 0 1px light-dark(rgb(24 24 27 / 0.09), rgb(255 255 255 / 0.08)),
+      0 14px 44px -10px light-dark(rgb(24 24 27 / 0.16), rgb(0 0 0 / 0.34));
+    --shadow-sheet: 0 -10px 40px -20px light-dark(rgb(24 24 27 / 0.14), rgb(0 0 0 / 0.4));
+    --shadow-badge: 0 0 0 0.5px var(--color-border-strong), 0 1px 3px light-dark(rgb(24 24 27 / 0.08), rgb(0 0 0 / 0.18));
+    --shadow-field-focus: inset 0 0 0 1px var(--color-field-ring);
+    --shadow-shine: inset 0 1px 0 0 light-dark(rgb(255 255 255 / 0.3), rgb(255 255 255 / 0.13)),
+      inset 0 -1px 0 0 light-dark(transparent, rgb(255 255 255 / 0.04)),
+      inset 0 0 0 1px light-dark(transparent, rgb(255 255 255 / 0.05));
+    --shadow-shine-top: inset 0 1px 0 0 light-dark(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.1));
+    --shadow-row-rim: inset 0 0 0 1px light-dark(rgb(24 24 27 / 0.03), rgb(255 255 255 / 0.06));
+    --shadow-hairline: inset 0 0 0 0.5px var(--color-border-strong);
+    /* The lit (primary) fill: a top highlight and a one-pixel drop. */
+    --shadow-lit: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 1px 2px rgb(0 0 0 / 0.12);
+    /* The sliding thumb of a segmented control or tab list. */
+    --color-thumb: light-dark(var(--color-control), var(--color-fill-active));
+    --shadow-thumb: 0 0 0 0.5px light-dark(rgb(24 24 27 / 0.05), transparent),
+      0 1px 2px light-dark(rgb(24 24 27 / 0.06), transparent),
+      inset 0 0 0 1px light-dark(transparent, rgb(255 255 255 / 0.06));
+    --shadow-composer: 0 1px 2px light-dark(rgb(0 0 0 / 0.05), transparent),
+      0 14px 32px -18px light-dark(transparent, rgb(0 0 0 / 0.75));
+
+    /* Zephium sky glass: UI standing on the sky */
+    --sky-paper: var(--color-ground);
+    --sky-shadow: light-dark(rgb(18 48 112 / 22%), rgb(2 8 24 / 40%));
+    --sky-disc-fill: light-dark(rgb(255 255 255 / 18%), rgb(255 255 255 / 10%));
+    --sky-disc-rim: light-dark(rgb(255 255 255 / 36%), rgb(255 255 255 / 18%));
+    --sky-glass: light-dark(rgb(242 244 248 / 72%), rgb(18 20 27 / 76%));
+    --sky-lip: light-dark(rgb(236 244 255 / 34%), rgb(176 196 238 / 30%));
+    --sky-edge: light-dark(rgb(232 238 248 / 46%), rgb(10 16 32 / 58%));
+    --sky-card: light-dark(rgb(255 255 255 / 64%), rgb(12 18 36 / 64%));
+    --sky-card-rim: light-dark(rgb(255 255 255 / 90%), rgb(176 196 238 / 26%));
+    --sky-card-edge: light-dark(rgb(255 255 255 / 70%), rgb(176 196 238 / 14%));
+    --sky-ink: rgb(255 255 255);
+    --sky-name: rgb(255 255 255 / 92%);
+    --sky-on-ink: rgb(11 31 54);
+    --sky-ink-hover: rgb(238 244 251);
+    /* A deep-sky veil for secondary controls and text standing on the clouds. */
+    --sky-veil: rgb(18 52 96 / 0.24);
+    --sky-veil-hover: rgb(18 52 96 / 0.32);
+    --sky-veil-rim: inset 0 0 0 0.5px rgb(255 255 255 / 0.45);
+    --sky-text-shadow: 0 1px 16px rgb(20 60 110 / 0.32);
+    --sky-float-shadow: 0 18px 50px light-dark(rgb(8 20 40 / 0.18), rgb(8 20 40 / 0.32));
+
+    /* Static skies for this scene (components/sky). */
+    --sky-baked: image-set(url("/sky/day-baked-2200.avif") type("image/avif"), url("/sky/day-baked-2200.jpg") type("image/jpeg"));
+    --sky-baked-narrow: image-set(url("/sky/day-baked-1200.avif") type("image/avif"), url("/sky/day-baked-1200.jpg") type("image/jpeg"));
+    --sky-frost: url("/sky/frost-day.png");
+  }
+
+  [data-theme="day"],
+  [data-theme="dawn"] {
+    color-scheme: light;
+  }
+
+  [data-theme="night"] {
+    color-scheme: dark;
+    --soft-wash: 15%;
+    --soft-edge: 26%;
+    --soft-ink: 62%;
+    --glass-blur: 16px;
+    --glass-saturation: 1.08;
+    --sky-baked: image-set(url("/sky/night-baked-2200.avif") type("image/avif"), url("/sky/night-baked-2200.jpg") type("image/jpeg"));
+    --sky-baked-narrow: image-set(url("/sky/night-baked-1200.avif") type("image/avif"), url("/sky/night-baked-1200.jpg") type("image/jpeg"));
+    --sky-frost: url("/sky/frost-night.png");
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --soft-wash: 15%;
+      --soft-edge: 26%;
+      --soft-ink: 62%;
+      --glass-blur: 16px;
+      --glass-saturation: 1.08;
+      --sky-baked: image-set(url("/sky/night-baked-2200.avif") type("image/avif"), url("/sky/night-baked-2200.jpg") type("image/jpeg"));
+      --sky-baked-narrow: image-set(url("/sky/night-baked-1200.avif") type("image/avif"), url("/sky/night-baked-1200.jpg") type("image/jpeg"));
+      --sky-frost: url("/sky/frost-night.png");
+    }
+  }
+
+  /* Dawn: the day ladder shifted onto the dawn paper (#f2f0fa), same steps. */
+  [data-theme="dawn"] {
+    --color-ground: #f2f0fa;
+    --color-canvas: #eceaf5;
+    --color-chrome: #e1dfea;
+    --sky-shadow: rgb(27 41 88 / 22%);
+    --sky-glass: rgb(244 242 251 / 72%);
+    --sky-float-shadow: 0 18px 50px rgb(36 28 84 / 0.18);
+    --sky-baked: image-set(url("/sky/dawn-baked-2200.avif") type("image/avif"), url("/sky/dawn-baked-2200.jpg") type("image/jpeg"));
+    --sky-baked-narrow: image-set(url("/sky/dawn-baked-1200.avif") type("image/avif"), url("/sky/dawn-baked-1200.jpg") type("image/jpeg"));
+    --sky-frost: url("/sky/frost-dawn.png");
+  }
+
+  html {
+    background: var(--color-ground);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100svh;
+    background-color: var(--color-ground);
+    background-image: var(--surface-grain);
+    background-size: var(--surface-grain-size);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  ::selection {
+    background: light-dark(rgb(79 143 224 / 0.2), rgb(201 214 255 / 0.28));
+    color: var(--color-text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  pre,
+  code,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+  }
+
+  /* Lucide ships stroke 2; t3code lightens every icon to 1.75. Explicit
+     stroke-width props still win. */
+  :where(svg.lucide[stroke-width="2"]) {
+    stroke-width: 1.75;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+}
+
+/* ---------- Scrollbars (opencode): 4px pill, only while hovered ---------- */
+
+@property --scrollbar-hover {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-track:vertical {
+    margin: 4px 0;
+  }
+  ::-webkit-scrollbar-track:horizontal {
+    margin: 0 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    min-width: 32px;
+    min-height: 32px;
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-color: transparent;
+    background-clip: padding-box;
+  }
+  /* Chromium only re-resolves scrollbar parts on hover after a style change on the owner. */
+  :hover {
+    --scrollbar-hover: 1;
+  }
+  :hover::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-thumb);
+  }
+  ::-webkit-scrollbar-thumb:hover,
+  ::-webkit-scrollbar-thumb:active {
+    background-color: var(--scroll-thumb-hover);
+  }
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    :hover {
+      scrollbar-color: var(--scroll-thumb) transparent;
+    }
+  }
+}
+
+/* ---------- Utilities ---------- */
+
+@utility container-page {
+  width: 100%;
+  max-width: calc(var(--content) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Zephium two-tone headlines: the second clause steps back a rung. */
+@utility text-quiet {
+  color: color-mix(in srgb, currentColor 50%, transparent);
+}
+
+@utility hairline {
+  box-shadow: inset 0 0 0 0.5px var(--color-border-strong);
+}
+
+/* Text standing on the sky keeps a soft halo so it reads over bright cloud. */
+@utility sky-text {
+  text-shadow: var(--sky-text-shadow);
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* opencode: hidden until hover, always shown where there is no hover. */
+@utility hover-reveal {
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease-out);
+  @media (hover: none) {
+    opacity: 1;
+  }
+}
+
+@utility surface-grain {
+  background-image: var(--surface-grain);
+  background-repeat: repeat;
+  background-size: var(--surface-grain-size);
+}
+
+/* t3code glass */
+@utility surface-glass {
+  background: color-mix(in srgb, var(--color-canvas) var(--glass-opacity), transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+}
+
+@utility dropdown-glass {
+  background: color-mix(
+    in srgb,
+    var(--color-popover) 18%,
+    color-mix(in srgb, var(--color-popover) var(--glass-opacity), transparent)
+  );
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  box-shadow:
+    inset 0 0 0 0.5px light-dark(rgb(24 24 27 / 0.1), rgb(255 255 255 / 0.1)),
+    0 16px 40px -18px light-dark(rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.8));
+}
+
+@utility dialog-glass {
+  background: color-mix(in srgb, var(--color-canvas) var(--glass-opacity), transparent);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  box-shadow:
+    inset 0 0 0 0.5px light-dark(rgb(28 28 31 / 0.1), rgb(255 255 255 / 0.08)),
+    inset 0 1px light-dark(transparent, rgb(255 255 255 / 0.04)),
+    0 24px 64px -24px light-dark(rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.9));
+}
+
+@utility dialog-backdrop {
+  background: color-mix(in srgb, var(--color-canvas) 62%, transparent);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+/* Zephium vibrancy: a white veil for controls standing on the sky. */
+@utility vibrant {
+  background: rgb(255 255 255 / 0.14);
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+}
+
+/* Zephium glass card floating over the sky. */
+@utility sky-glass {
+  background: var(--sky-card);
+  box-shadow:
+    inset 0 0 0 0.5px var(--sky-card-rim),
+    inset 0 1px 0 var(--sky-card-edge),
+    var(--sky-float-shadow);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  backdrop-filter: blur(28px) saturate(1.6);
+}
+
+/* Zephium beam (website scene.module.css): a light running round the edge.
+   --beam-light picks the light; on the sky it is white. */
+@utility beam-edge {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--beam),
+      transparent 0deg,
+      transparent 250deg,
+      var(--beam-light, var(--color-sheen)) 320deg,
+      transparent 360deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+    animation: beam 4.5s linear infinite;
+  }
+  :root[data-motion="reduce"] &::before {
+    animation: none;
+    --beam: 300deg;
+  }
+}
+
+/* Fade the edges of a scroller only as far as it actually overflows
+   (t3code scrollFade, fed by Base UI ScrollArea's overflow variables). */
+@utility scroll-fade-y {
+  --fade: 1.5rem;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 min(var(--fade), var(--scroll-area-overflow-y-start, 0px)),
+    #000 calc(100% - min(var(--fade), var(--scroll-area-overflow-y-end, 0px))),
+    transparent 100%
+  );
+}
+
+/* ---------- Radar spinner: each dot fades on its own delay ---------- */
+
+[data-slot="spinner-dots"] rect {
+  opacity: var(--still);
+}
+[data-slot="spinner-dots"][data-offscreen] rect,
+[data-slot="spinner-grid"][data-offscreen] rect {
+  animation-play-state: paused !important;
+}
+:root[data-motion="reduce"] :is([data-slot="spinner-dots"], [data-slot="spinner-grid"]) rect {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is([data-slot="spinner-dots"], [data-slot="spinner-grid"]) rect {
+    animation: none !important;
+  }
+}
+
+@keyframes spinner-radar-0{0%{opacity:1;animation-timing-function:linear}2.55%{opacity:1;animation-timing-function:linear}4.05%{opacity:0.634;animation-timing-function:linear}8%{opacity:0.611;animation-timing-function:linear}12%{opacity:0.558;animation-timing-function:linear}16%{opacity:0.463;animation-timing-function:linear}20%{opacity:0.369;animation-timing-function:linear}24%{opacity:0.305;animation-timing-function:linear}28%{opacity:0.263;animation-timing-function:linear}32%{opacity:0.236;animation-timing-function:linear}36%{opacity:0.218;animation-timing-function:linear}40%{opacity:0.207;animation-timing-function:linear}44%{opacity:0.202;animation-timing-function:linear}48%{opacity:0.2;animation-timing-function:linear}95.95%{opacity:0.2;animation-timing-function:linear}97.45%{opacity:1;animation-timing-function:linear}100%{opacity:1;animation-timing-function:linear}}
+@keyframes spinner-radar-1{0%{opacity:1;animation-timing-function:linear}3.7%{opacity:1;animation-timing-function:linear}5.2%{opacity:0.627;animation-timing-function:linear}8%{opacity:0.611;animation-timing-function:linear}12%{opacity:0.558;animation-timing-function:linear}16%{opacity:0.463;animation-timing-function:linear}20%{opacity:0.369;animation-timing-function:linear}24%{opacity:0.305;animation-timing-function:linear}28%{opacity:0.263;animation-timing-function:linear}32%{opacity:0.236;animation-timing-function:linear}36%{opacity:0.218;animation-timing-function:linear}40%{opacity:0.207;animation-timing-function:linear}44%{opacity:0.202;animation-timing-function:linear}48%{opacity:0.2;animation-timing-function:linear}95.95%{opacity:0.2;animation-timing-function:linear}97.45%{opacity:1;animation-timing-function:linear}100%{opacity:1;animation-timing-function:linear}}
+@keyframes spinner-radar-2{0%{opacity:1;animation-timing-function:linear}3.7%{opacity:1;animation-timing-function:linear}5.2%{opacity:0.627;animation-timing-function:linear}8%{opacity:0.611;animation-timing-function:linear}12%{opacity:0.558;animation-timing-function:linear}16%{opacity:0.463;animation-timing-function:linear}20%{opacity:0.369;animation-timing-function:linear}24%{opacity:0.305;animation-timing-function:linear}28%{opacity:0.263;animation-timing-function:linear}32%{opacity:0.236;animation-timing-function:linear}36%{opacity:0.218;animation-timing-function:linear}40%{opacity:0.207;animation-timing-function:linear}44%{opacity:0.202;animation-timing-function:linear}48%{opacity:0.2;animation-timing-function:linear}94.8%{opacity:0.2;animation-timing-function:linear}96.3%{opacity:1;animation-timing-function:linear}100%{opacity:1;animation-timing-function:linear}}
+@keyframes spinner-radar-3{0%{opacity:1;animation-timing-function:linear}2.55%{opacity:1;animation-timing-function:linear}4.05%{opacity:0.634;animation-timing-function:linear}8%{opacity:0.611;animation-timing-function:linear}12%{opacity:0.558;animation-timing-function:linear}16%{opacity:0.463;animation-timing-function:linear}20%{opacity:0.369;animation-timing-function:linear}24%{opacity:0.305;animation-timing-function:linear}28%{opacity:0.263;animation-timing-function:linear}32%{opacity:0.236;animation-timing-function:linear}36%{opacity:0.218;animation-timing-function:linear}40%{opacity:0.207;animation-timing-function:linear}44%{opacity:0.202;animation-timing-function:linear}48%{opacity:0.2;animation-timing-function:linear}94.8%{opacity:0.2;animation-timing-function:linear}96.3%{opacity:1;animation-timing-function:linear}100%{opacity:1;animation-timing-function:linear}}
+@keyframes spinner-radar-4{0%{opacity:1;animation-timing-function:linear}6.25%{opacity:1;animation-timing-function:linear}7.75%{opacity:0.613;animation-timing-function:linear}8%{opacity:0.611;animation-timing-function:linear}12%{opacity:0.558;animation-timing-function:linear}16%{opacity:0.463;animation-timing-function:linear}20%{opacity:0.369;animation-timing-function:linear}24%{opacity:0.305;animation-timing-function:linear}28%{opacity:0.263;animation-timing-function:linear}32%{opacity:0.236;animation-timing-function:linear}36%{opacity:0.218;animation-timing-function:linear}40%{opacity:0.207;animation-timing-function:linear}44%{opacity:0.202;animation-timing-function:linear}48%{opacity:0.2;animation-timing-function:linear}92.25%{opacity:0.2;animation-timing-function:linear}93.75%{opacity:1;animation-timing-function:linear}100%{opacity:1;animation-timing-function:linear}}
+
+/* ShimmerText under reduced motion: plain text, no band. */
+:root[data-motion="reduce"] [data-shimmer-band] {
+  visibility: hidden;
+  animation-play-state: paused;
+}
+:root[data-motion="reduce"] [data-shimmer-words] {
+  color: inherit !important;
+}
+
+/* 4x4 grid spinner */
+@keyframes pulse-opacity {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes pulse-opacity-dim {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ---------- Loops and state animations ---------- */
+
+@keyframes skeleton {
+  0%,
+  42% {
+    opacity: 1;
+    animation-timing-function: steps(4);
+  }
+  50%,
+  92% {
+    opacity: 0.55;
+    animation-timing-function: steps(4);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes status-pulse {
+  0%,
+  40% {
+    opacity: 1;
+    animation-timing-function: steps(6);
+  }
+  50%,
+  90% {
+    opacity: 0.5;
+    animation-timing-function: steps(6);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes status-ping {
+  0% {
+    opacity: 0.9;
+    scale: 0.75;
+    animation-timing-function: steps(8);
+  }
+  40%,
+  100% {
+    opacity: 0;
+    scale: 2;
+  }
+}
+@keyframes live-pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Zephium beam: a light running around a capsule's edge. */
+@property --beam {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes beam {
+  to {
+    --beam: 360deg;
+  }
+}
+
+/* Zephium entrances */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+/* Hero text: it focuses and settles in, but never starts invisible, so the
+   browser counts it as painted on the first frame (LCP ignores opacity 0). */
+@keyframes rise-visible {
+  from {
+    opacity: 0.4;
+    transform: translateY(14px);
+  }
+}
+@keyframes word {
+  from {
+    opacity: 0.4;
+    filter: blur(10px);
+    transform: translateY(0.22em);
+  }
+}
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+@keyframes pin-in {
+  from {
+    opacity: 0;
+    scale: 0.6;
+  }
+}
+
+/* ---------- Topbar: a row only when the page has something to put in it ---------- */
+
+/* With no title or actions on screen (the team home), the bar leaves the layout and only the sidebar toggle stays,
+   floating exactly where it sits in the full bar so it never jumps between pages. The shell sets the flag from the
+   pages that claim the bar: emptiness can't tell, since a page left behind keeps its hidden title in the slot. */
+[data-topbar-floats] > [data-slot="topbar"] {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: 20;
+  border-color: transparent;
+  pointer-events: none;
+}
+
+[data-topbar-floats] > [data-slot="topbar"] > * {
+  pointer-events: auto;
+}
+
+/* The connection banner then starts at the top; keep its text clear of the toggle. */
+[data-topbar-floats] > [data-slot="topbar-banner"] > * {
+  padding-left: 3.25rem;
+}
+
+/* ---------- Reduced motion ---------- */
+
+:root[data-motion="reduce"] *,
+:root[data-motion="reduce"] *::before,
+:root[data-motion="reduce"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* t3code: no transitions while the theme switches */
+.no-transitions,
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+  transition-duration: 0s !important;
+  animation-duration: 0s !important;
+}

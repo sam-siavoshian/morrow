@@ -1,0 +1,57 @@
+/* A tile whose agent just spoke: a soft wash of its colour breathing out behind the tile (no outline). */
+.pulse {
+  animation: pulse 1200ms var(--ease-out) 2 both;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+/* Working: three dots taking turns, quietly. */
+.dots > span {
+  animation: dot 1200ms var(--ease-in-out) infinite both;
+}
+.dots > span:nth-child(2) {
+  animation-delay: 160ms;
+}
+.dots > span:nth-child(3) {
+  animation-delay: 320ms;
+}
+
+@keyframes dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion: the wash holds still while it shows, the dots stay put. */
+:root[data-motion="reduce"] .pulse {
+  animation: none;
+  opacity: 0.35;
+}
+:root[data-motion="reduce"] .dots > span {
+  animation: none;
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pulse {
+    animation: none;
+    opacity: 0.35;
+  }
+  .dots > span {
+    animation: none;
+    opacity: 0.6;
+  }
+}

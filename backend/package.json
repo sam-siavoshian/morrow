@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.4",
+    "agent-relay": "^14.0.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@agent-relay/sdk": "14.0.0",
+    "@morrow/contracts": "workspace:*",
+    "@xterm/addon-serialize": "0.14.0",
+    "@xterm/headless": "6.0.0",
+    "freestyle": "0.2.20",
+    "hono": "4.13.14",
+    "zod": "4.6.7"
+  }
+}

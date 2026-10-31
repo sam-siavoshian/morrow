@@ -1,0 +1,125 @@
+/* opencode toast geometry (packages/ui/src/feedback/toast) on Base UI's
+   stacking variables: 320px wide, 12px apart, the ones behind shrinking 5%
+   and peeking 9.5px each. Placed like t3code: top right, just under the
+   52px topbar, stacking downward. */
+
+.viewport {
+  position: fixed;
+  z-index: 70;
+  top: calc(var(--workspace-topbar-height, 52px) + 8px + env(safe-area-inset-top));
+  right: 12px;
+  width: calc(100vw - 24px);
+  outline: none;
+}
+
+@media (min-width: 640px) {
+  .viewport {
+    top: calc(var(--workspace-topbar-height, 52px) + 12px);
+    right: 16px;
+    width: 320px;
+  }
+}
+
+.toast {
+  --gap: 12px;
+  --peek: 9.5px;
+  --scale: calc(max(0, 1 - (var(--toast-index) * 0.05)));
+  --shrink: calc(1 - var(--scale));
+  --height: var(--toast-frontmost-height, var(--toast-height));
+  --offset-y: calc(var(--toast-offset-y) + (var(--toast-index) * var(--gap)) + var(--toast-swipe-movement-y));
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: var(--height);
+  z-index: calc(1000 - var(--toast-index));
+  border-radius: 14px;
+  background: var(--color-float);
+  box-shadow: var(--shadow-float);
+  color: var(--color-text);
+  transform-origin: top center;
+  transform: translateX(var(--toast-swipe-movement-x))
+    translateY(calc(var(--toast-swipe-movement-y) + (var(--toast-index) * var(--peek)) + (var(--shrink) * var(--height))))
+    scale(var(--scale));
+  transition:
+    transform 280ms var(--ease-press),
+    opacity 160ms var(--ease-out),
+    height 280ms var(--ease-press);
+  user-select: none;
+  cursor: default;
+
+  /* Bridges the gap so hovering between toasts keeps the stack open. */
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: calc(var(--gap) + 1px);
+  }
+
+  &[data-expanded] {
+    transform: translateX(var(--toast-swipe-movement-x)) translateY(var(--offset-y));
+    height: var(--toast-height);
+  }
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    transform: translateY(-150%);
+  }
+
+  &[data-limited] {
+    opacity: 0;
+  }
+
+  &[data-ending-style] {
+    opacity: 0;
+    &[data-swipe-direction="up"] {
+      transform: translateY(calc(var(--toast-swipe-movement-y) - 150%));
+    }
+    &[data-swipe-direction="down"] {
+      transform: translateY(calc(var(--toast-swipe-movement-y) + 150%));
+    }
+    &[data-swipe-direction="left"] {
+      transform: translateX(calc(var(--toast-swipe-movement-x) - 150%)) translateY(var(--offset-y));
+    }
+    &[data-swipe-direction="right"] {
+      transform: translateX(calc(var(--toast-swipe-movement-x) + 150%)) translateY(var(--offset-y));
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  column-gap: 12px;
+  padding: 12px 12px 12px 14px;
+  overflow: hidden;
+  transition: opacity 250ms var(--ease-out);
+
+  &[data-behind] {
+    opacity: 0;
+  }
+  &[data-expanded] {
+    opacity: 1;
+  }
+}
+
+.withIcon {
+  grid-template-columns: 16px minmax(0, 1fr) 20px;
+}
+
+.icon {
+  display: flex;
+  padding-top: 2px;
+
+  & svg {
+    width: 16px;
+    height: 16px;
+  }
+}

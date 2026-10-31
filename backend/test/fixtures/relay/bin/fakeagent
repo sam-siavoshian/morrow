@@ -1,0 +1,7 @@
+#!/bin/sh
+# Fake harness for broker tests. "->pty:ready" is the broker's explicit readiness signal. Like a real CLI
+# it consumes submitted input instead of leaving it on screen: the broker treats a body still visible after
+# submit as "parked" and fails the delivery.
+stty -echo 2>/dev/null
+printf "%s\n" "->pty:ready"
+exec cat >/dev/null

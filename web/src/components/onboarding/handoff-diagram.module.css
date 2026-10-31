@@ -1,0 +1,19 @@
+/* A light travelling down the connector, one character at a time (stepped, so it reads as a
+   terminal, not a tween). Each cell sets --i. */
+.flow {
+  animation: flow 2.8s steps(1, end) infinite;
+  animation-delay: calc(var(--i) * 0.22s);
+}
+
+@keyframes flow {
+  0% {
+    color: var(--color-soft-sky);
+  }
+  14% {
+    color: inherit;
+  }
+}
+
+:root[data-motion="reduce"] .flow {
+  animation: none;
+}

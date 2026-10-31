@@ -1,0 +1,63 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *
+ * Adapted from zephium-browser/website components/scene/clouds.module.css.
+ * Changes: one fallback picture per scene; the canvas hides until its first frame; a gradient sampled from
+ * each scene's picture stands in until the picture or the first frame arrives, so the white hero text over
+ * it is readable from the first paint on a slow connection.
+ */
+
+.sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--fallback);
+  --fallback: linear-gradient(#1259d4, #2881f0 55%, #efefeb);
+  --wide: image-set(url("/sky/day-1672.avif") type("image/avif"), url("/sky/day-1672.jpg") type("image/jpeg"));
+  --narrow: image-set(url("/sky/day-900.avif") type("image/avif"), url("/sky/day-900.jpg") type("image/jpeg"));
+}
+
+.sky[data-scene="dawn"] {
+  --fallback: linear-gradient(#4962b1, #8a8ed5 55%, #e3aac9);
+  --wide: image-set(url("/sky/dawn-1672.avif") type("image/avif"), url("/sky/dawn-1672.jpg") type("image/jpeg"));
+  --narrow: image-set(url("/sky/dawn-900.avif") type("image/avif"), url("/sky/dawn-900.jpg") type("image/jpeg"));
+}
+
+.sky[data-scene="night"] {
+  --fallback: linear-gradient(#031139, #041f59 55%, #6483ba);
+  --wide: image-set(url("/sky/night-1672.avif") type("image/avif"), url("/sky/night-1672.jpg") type("image/jpeg"));
+  --narrow: image-set(url("/sky/night-900.avif") type("image/avif"), url("/sky/night-900.jpg") type("image/jpeg"));
+}
+
+.sky[data-flat] {
+  background: var(--wide) 50% 66% / cover no-repeat, var(--fallback);
+  animation: arrive 1.2s var(--ease-out) backwards;
+}
+
+@media (max-width: 899px) {
+  .sky[data-flat] {
+    background-image: var(--narrow), var(--fallback);
+  }
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+  }
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas:not([data-drawn]) {
+  visibility: hidden;
+}
+
+.sky[data-flat] .canvas {
+  display: none;
+}

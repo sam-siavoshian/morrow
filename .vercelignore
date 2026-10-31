@@ -1,0 +1,16 @@
+# The Vercel project builds web/ (its Root Directory) inside the Bun workspace. Upload only what that build
+# needs: the workspace manifest and lockfile, the shared contracts and the web app.
+/*
+!/package.json
+!/bun.lock
+!/packages
+!/web
+!/backend
+/backend/*
+!/backend/package.json
+node_modules
+.next
+*.tsbuildinfo
+.env
+.env.*
+.DS_Store
